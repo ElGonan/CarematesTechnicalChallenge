@@ -3,9 +3,11 @@
  */
 // eslint-disable-next-line react/prop-types
 const Button = ({ children }) => (
-    <button className=' bg-green-300 rounded-lg h-fit w-fit px-4 py-4 text-white hover:bg-green-700'>
-      { children }
-    </button>
+    <div className="flex justify-end">
+        <button className='ml-8 bg-green-400 rounded-lg h-fit w-fit px-4 py-4 text-white hover:bg-green-700'>
+            { children }
+        </button>
+    </div>
   );
   
   export default Button;
