@@ -93,10 +93,13 @@ function App() {
 
   return (
     <>
-      <div className=' bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-white mx-4 mt-2'>
+    <div>
+      <a href='https://github.com/ElGonan' className='text-sm ml-4 mt-8 mb-4 text-white'>Developed by Alan González "ElGonan"</a>
+    </div>
+      <div className=' bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-gray-400 mx-4 mt-2'>
         <div className='flex'>
             <div className='w-full'>
-              <input type='text' ref={messageRef} placeholder='Add text here my man.' className='w-full h-full border border-gray-300 rounded-lg pl-2 pr-2' maxLength={200}/>
+              <input type='text' ref={messageRef} placeholder='Please, add a task by writing it here and then clicking "Add Task"' className='w-full h-full border border-gray-300 rounded-lg pl-2 pr-2' maxLength={200}/>
             </div>
             <Button type='submit' onClick={buttonload} disabled={!isActive}>Add task</Button>
         </div>
@@ -117,7 +120,7 @@ function App() {
                 </div>
               </Card> 
               :  
-              <Card color='bg-gray-200' shadowColor='shadow-lg'>
+              <Card color='bg-gray-200 shadow-gray-600'>
                 <div className='flex'>
                 <div className='w-full flex justify-center items-center bg-white rounded-xl'>
                   <p className='text-gray'>{task.task}</p>

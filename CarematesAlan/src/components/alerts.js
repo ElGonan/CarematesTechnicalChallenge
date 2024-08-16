@@ -23,15 +23,6 @@ export function FireSuccess(message) {
   });
 }
 
-export function FireWarning(message) {
-  MySwal.fire({
-    icon: 'warning',
-    title: 'Warning',
-    text: message,
-  });
-}
-
-
 export function FireQuestion(message) {
   return MySwal.fire({
     icon: 'question',

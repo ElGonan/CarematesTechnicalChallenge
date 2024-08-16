@@ -7,6 +7,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
+    "site": "carematesdemoalan",
     "public": "dist",
     "ignore": [
       "firebase.json",
