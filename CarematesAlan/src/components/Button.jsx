@@ -14,5 +14,5 @@ const Button = ({ children, disabled, onClick, color, hoverColor}) => {
     </div>
     )
 };
-  
-  export default Button;
+
+export default Button;

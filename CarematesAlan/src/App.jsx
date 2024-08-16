@@ -1,15 +1,18 @@
-
 import { useEffect, useState, useRef } from 'react'
 import Tasks from './model/tasks'
 import Card from './components/Card'
 import Button from './components/Button'
+
 function App() {
   const [isActive, setIsActive] = useState(true)
   const [tasks, setTasks] = useState([])
   const [areTasks, setAreTasks] = useState(false)
   const messageRef = useRef()
 
+  // This function is for the button to load the task into the DB.
   const buttonload = async(e) => {
+
+    // This is to prevent the button from being clicked multiple times.
     setIsActive(false)
     if (messageRef.current.value === '') {
       alert('Please enter a task')
@@ -17,27 +20,33 @@ function App() {
       return
     }
 
+    // This is the data that is going to be sent to the DB.
     let data = {
       task: messageRef.current.value,
       done: false
     }
 
+    // This is the try catch block to add the task to the DB.
     try {
       await Tasks.addTask(data)
-      setTasks([...tasks, data])
     } catch (error) {
       console.log(error)
     }
     setIsActive(true)
 
+    // This is to clear the input field after the task is added.
     messageRef.current.value = ''
 
+    // This is to get the tasks from the DB.
     getTasks()
   }
 
+  // This function is to get the tasks from the DB.
   const getTasks = async() => {
     const data = await Tasks.getTasks()
     setTasks(data)
+
+    // This is to check if there are tasks in the DB. If there are none, it will display a message.
     if (data.length > 0) {
       setAreTasks(true)
     } else {
@@ -45,6 +54,7 @@ function App() {
     }
   }
 
+  // This function is to delete a task from the DB.
   const deleteTask = async(id) => {
     try {
       await Tasks.deleteTask(id)
@@ -55,6 +65,7 @@ function App() {
     getTasks()
   }
 
+  // This function is to mark a task as done.
   const doneTask = async(id) => {
     try {
       await Tasks.doneTask(id)
@@ -64,6 +75,7 @@ function App() {
     getTasks()
   }
 
+  // This is to get the tasks from the DB when the page loads.
   useEffect(() => {
     getTasks()
   }, [])
