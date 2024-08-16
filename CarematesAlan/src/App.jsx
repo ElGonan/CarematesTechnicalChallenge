@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import Tasks from './model/tasks'
 import Card from './components/Card'
 import Button from './components/Button'
+import { FireError, FireQuestion, FireSuccess } from './components/alerts'
 
 function App() {
   const [isActive, setIsActive] = useState(true)
@@ -15,7 +16,7 @@ function App() {
     // This is to prevent the button from being clicked multiple times.
     setIsActive(false)
     if (messageRef.current.value === '') {
-      alert('Please enter a task')
+      FireError('The task cannot be empty.')
       setIsActive(true)
       return
     }
@@ -29,8 +30,10 @@ function App() {
     // This is the try catch block to add the task to the DB.
     try {
       await Tasks.addTask(data)
+      FireSuccess('Task added successfully.')
     } catch (error) {
       console.log(error)
+      FireError('There was an error adding the task', 'The error is: ' + error)
     }
     setIsActive(true)
 
@@ -56,21 +59,29 @@ function App() {
 
   // This function is to delete a task from the DB.
   const deleteTask = async(id) => {
-    try {
-      await Tasks.deleteTask(id)
-      setTasks(tasks.filter(task => task.id !== id))
-    } catch (error) {
-      console.log(error)
-    }
-    getTasks()
+    FireQuestion('Are you sure you want to delete this task?').then((result) => {
+      if (result.isConfirmed) {
+        try {
+          Tasks.deleteTask(id)
+          setTasks(tasks.filter(task => task.id !== id))
+        } catch (error) {
+          console.log(error)
+        }
+        getTasks()
+      }
+      }
+    )
   }
+    
 
   // This function is to mark a task as done.
   const doneTask = async(id) => {
     try {
       await Tasks.doneTask(id)
+      FireSuccess('Task marked as done.')
     } catch (error) {
       console.log(error)
+      FireError('There was an error marking the task as done.', 'The error is: ' + error)
     }
     getTasks()
   }
@@ -95,24 +106,24 @@ function App() {
         <div className='mt-12'>
           {tasks.map((task) => (
             <div key={task.id}>
-              {task.done ? <Card color='bg-green-200' shadowColor='shadow-lime-400'>
+              {task.done ? <Card color='bg-green-200 shadow-lime-500'>
                 <div className='flex'>
-                <div className='w-full flex justify-center items-center'>
+                <div className='w-full flex justify-center items-center bg-white rounded-xl'>
                   <p className='text-gray'>{task.task}</p>
                 </div>
                 <div> 
-                    <Button onClick={() => deleteTask(task.id)} disabled={!isActive} color='bg-red-500' hoverColor='bg-red-700'>Delete</Button>
+                    <Button onClick={() => deleteTask(task.id)} disabled={!isActive} color='bg-red-500 hover:bg-red-700'>Delete</Button>
                 </div>
                 </div>
               </Card> 
               :  
               <Card color='bg-gray-200' shadowColor='shadow-lg'>
                 <div className='flex'>
-                <div className='w-full flex justify-center items-center'>
+                <div className='w-full flex justify-center items-center bg-white rounded-xl'>
                   <p className='text-gray'>{task.task}</p>
                 </div>
                 <div>
-                  <Button onClick={() => deleteTask(task.id)} disabled={!isActive} color='bg-red-500' hoverColor='bg-red-700'>Delete</Button>
+                  <Button onClick={() => deleteTask(task.id)} disabled={!isActive} color='bg-red-500 hover:bg-red-700'>Delete</Button>
                   <Button onClick={() => doneTask(task.id)} disabled={!isActive} >Done</Button>
                 </div>
                 </div>
@@ -123,7 +134,7 @@ function App() {
         </div>
         :
         <div className='flex items-center justify-center w-full mt-12'>
-            <h1 className='text-gray-200'>No hay tasks</h1>
+            <h1 className='text-gray-200'>There are no tasks</h1>
         </div>
 }
       </div>
