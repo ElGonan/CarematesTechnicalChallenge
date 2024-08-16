@@ -1,21 +1,28 @@
-// this JS is going to be our data model for the tasks, we'll have a list of tasks, and we'll be able to add, remove, and update them
+import { firestore } from './firebase';
+import { addDoc,collection,doc,deleteDoc,getDocs } from 'firebase/firestore';
 
-// eslint-disable-next-line no-unused-vars
-const Tasks = [
-    {
-        task: 'This is a task',
-        done: true
-    },
-    {
+const ref = collection(firestore, 'tasks');
 
-        task: 'This is another task',
-        done: false
-    },
-    {
-        task: 'This is yet another task',
-        done: false
+export default class Tasks {
+    static async addTask(task) {
+        try {
+            await addDoc(ref, task);
+        } catch (error) {
+            console.error('Error adding document: ', error);
+        }
     }
-]
 
-export default Tasks
+    static async deleteTask(id) {
+        try {
+            await deleteDoc(doc(ref, id));
+        } catch (error) {
+            console.error('Error deleting document: ', error);
+        }
+    }
 
+    static async getTasks() {
+        const snapshot = await getDocs(ref);
+        const tasks = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        return tasks;
+    }
+}

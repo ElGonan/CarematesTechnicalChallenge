@@ -1,19 +1,30 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Tasks from './model/tasks'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import './App.css'
 // import Card from './components/Card'
 import Button from './components/Button'
 function App() {
   // const [count, setCount] = useState(0)
   const [isActive, setIsActive] = useState(true)
   const [tasks, setTasks] = useState([])
+  const messageRef = useRef()
 
-  const buttonload = () => {
-    console.log("imhere")
+  const buttonload = async(e) => {
     setIsActive(false)
+    e.preventDefault();
+    console.log(messageRef.current.value)
+
+    let data = {
+      task: messageRef.current.value,
+      done: false
+    }
+
+    try {
+      await Tasks.addTask(data)
+      setTasks([...tasks, data])
+    } catch (error) {
+      console.log(error)
+    }
     // now i want that after 5 seconds the button should be active again
     setTimeout(() => {
       setIsActive(true)
@@ -25,14 +36,14 @@ function App() {
       <div className=' bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-white'>
         <div className='flex'>
             <div className='w-full'>
-              <input placeholder='Add text here my man.' className='w-full h-full border border-gray-300 rounded-lg pl-2' maxLength={200}/>
+              <input type='text' ref={messageRef} placeholder='Add text here my man.' className='w-full h-full border border-gray-300 rounded-lg pl-2' maxLength={200}/>
             </div>
-            <Button onClick={buttonload} disabled={!isActive}>Add task</Button>
+            <Button type='submit' onClick={buttonload} disabled={!isActive}>Add task</Button>
         </div>
       </div>
       <div>
         <div className='mt-12'>
-          {tasks ? Tasks.map((task) => (
+          {tasks ? tasks.map((task) => (
             <div key={task.id} className={task.done ? ' bg-green-300 rounded-lg px-8 py-8 border shadow-lg shadow-lime-500 mb-4 ' : 'bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-white mb-4'}>
               <div className='flex'>
               <div className='w-full flex justify-center items-center'>
