@@ -12,9 +12,7 @@ carematesdemoalan.web.app
 # What I used to build this?
 
 ## Front-end
-React, with JavaScript
-Tailwind CSS
-SweeetAlert2
+React, with JavaScript, Tailwind CSS, SweeetAlert2
 
 ## Back-end
 Firestore
