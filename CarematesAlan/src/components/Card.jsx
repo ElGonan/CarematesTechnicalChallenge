@@ -5,10 +5,15 @@
  * @returns {JSX.Element} - The Card component.
  */
 // eslint-disable-next-line react/prop-types
-const Card = ({ children }) => (
-    <div className=' bg-gray-300 rounded-lg px-8 py-8 '>
+const Card = ({ children, color, shadowColor }) => {
+    const backgroundColor = color || 'bg-gray-200';
+    const shadow = shadowColor || 'shadow-lg';
+
+    return (
+    <div className={`${backgroundColor} rounded-lg px-4 py-4 mb-4 mx-8 ${shadow}`}>
       { children }
     </div>
-  );
+    )
+};
   
   export default Card;

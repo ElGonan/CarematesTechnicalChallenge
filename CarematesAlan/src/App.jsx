@@ -1,18 +1,21 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Tasks from './model/tasks'
-// import Card from './components/Card'
+import Card from './components/Card'
 import Button from './components/Button'
 function App() {
-  // const [count, setCount] = useState(0)
   const [isActive, setIsActive] = useState(true)
   const [tasks, setTasks] = useState([])
+  const [areTasks, setAreTasks] = useState(false)
   const messageRef = useRef()
 
   const buttonload = async(e) => {
     setIsActive(false)
-    e.preventDefault();
-    console.log(messageRef.current.value)
+    if (messageRef.current.value === '') {
+      alert('Please enter a task')
+      setIsActive(true)
+      return
+    }
 
     let data = {
       task: messageRef.current.value,
@@ -25,45 +28,92 @@ function App() {
     } catch (error) {
       console.log(error)
     }
-    // now i want that after 5 seconds the button should be active again
-    setTimeout(() => {
-      setIsActive(true)
-    }, 5000)  
+    setIsActive(true)
+
+    messageRef.current.value = ''
+
+    getTasks()
   }
+
+  const getTasks = async() => {
+    const data = await Tasks.getTasks()
+    setTasks(data)
+    if (data.length > 0) {
+      setAreTasks(true)
+    } else {
+      setAreTasks(false)
+    }
+  }
+
+  const deleteTask = async(id) => {
+    try {
+      await Tasks.deleteTask(id)
+      setTasks(tasks.filter(task => task.id !== id))
+    } catch (error) {
+      console.log(error)
+    }
+    getTasks()
+  }
+
+  const doneTask = async(id) => {
+    try {
+      await Tasks.doneTask(id)
+    } catch (error) {
+      console.log(error)
+    }
+    getTasks()
+  }
+
+  useEffect(() => {
+    getTasks()
+  }, [])
 
   return (
     <>
-      <div className=' bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-white'>
+      <div className=' bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-white mx-4 mt-2'>
         <div className='flex'>
             <div className='w-full'>
-              <input type='text' ref={messageRef} placeholder='Add text here my man.' className='w-full h-full border border-gray-300 rounded-lg pl-2' maxLength={200}/>
+              <input type='text' ref={messageRef} placeholder='Add text here my man.' className='w-full h-full border border-gray-300 rounded-lg pl-2 pr-2' maxLength={200}/>
             </div>
             <Button type='submit' onClick={buttonload} disabled={!isActive}>Add task</Button>
         </div>
       </div>
       <div>
+        {areTasks ? 
         <div className='mt-12'>
-          {tasks ? tasks.map((task) => (
-            <div key={task.id} className={task.done ? ' bg-green-300 rounded-lg px-8 py-8 border shadow-lg shadow-lime-500 mb-4 ' : 'bg-gray-300 rounded-lg px-8 py-8 border shadow-lg shadow-white mb-4'}>
-              <div className='flex'>
-              <div className='w-full flex justify-center items-center'>
-                <p className='text-white'>{task.task}</p>
-              </div>
-              {task.done ?  
-              <div> 
-                  <Button onClick={buttonload} disabled={!isActive} color='bg-red-500' hoverColor='bg-red-700'>Delete</Button>
-              </div>
-              
-                : 
-              <div>
-                <Button onClick={buttonload} disabled={!isActive} color='bg-red-500' hoverColor='bg-red-700'>Delete</Button>
-                <Button onClick={buttonload} disabled={!isActive} >Done</Button>
-              </div> }
-
-              </div>
+          {tasks.map((task) => (
+            <div key={task.id}>
+              {task.done ? <Card color='bg-green-200' shadowColor='shadow-lime-400'>
+                <div className='flex'>
+                <div className='w-full flex justify-center items-center'>
+                  <p className='text-gray'>{task.task}</p>
+                </div>
+                <div> 
+                    <Button onClick={() => deleteTask(task.id)} disabled={!isActive} color='bg-red-500' hoverColor='bg-red-700'>Delete</Button>
+                </div>
+                </div>
+              </Card> 
+              :  
+              <Card color='bg-gray-200' shadowColor='shadow-lg'>
+                <div className='flex'>
+                <div className='w-full flex justify-center items-center'>
+                  <p className='text-gray'>{task.task}</p>
+                </div>
+                <div>
+                  <Button onClick={() => deleteTask(task.id)} disabled={!isActive} color='bg-red-500' hoverColor='bg-red-700'>Delete</Button>
+                  <Button onClick={() => doneTask(task.id)} disabled={!isActive} >Done</Button>
+                </div>
+                </div>
+              </Card> 
+              }
             </div>
-          )) : <h1 className='text-gray-300 text-xl'>No tasks available</h1> }
+          ))}
         </div>
+        :
+        <div className='flex items-center justify-center w-full mt-12'>
+            <h1 className='text-gray-200'>No hay tasks</h1>
+        </div>
+}
       </div>
     </>
     
